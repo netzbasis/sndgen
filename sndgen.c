@@ -56,6 +56,9 @@ main(int argc, char *argv[]) {
 	par.rate = SG_RATE;
 	par.le = 1; /* XXX what about be architectures? */
 
+	if (pledge("stdio dns unix rpath audio", NULL) == -1)
+		err(1, "pledge");
+
 	/* default to white noise bursts */
 	playlen = sizeof(buf);
 	arc4random_buf(&buf, playlen);
@@ -88,11 +91,17 @@ main(int argc, char *argv[]) {
 	if (hdl == NULL)
 		errx(ret, "could not open device");
 
+	if (pledge("stdio audio", NULL) == -1)
+		err(1, "pledge");
+
 	if (!sio_setpar(hdl, &par))
 		goto cleanup;
 
 	if (!sio_start(hdl))
 		goto cleanup;
+
+	if (pledge("stdio", NULL) == -1)
+		err(1, "pledge");
 
 	signal(SIGINT, handler);
 
