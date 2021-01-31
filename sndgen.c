@@ -33,9 +33,9 @@
 
 int play = 1;
 
-__dead void static usage(void);
-void handler(int);
-int fill_sine(int16_t*, int, int);
+__dead static void usage(void);
+static void handler(int);
+static int fill_sine(int16_t*, int, int);
 
 int
 main(int argc, char *argv[]) {
@@ -120,39 +120,37 @@ cleanup:
 	return ret;
 }
 
-__dead void static
+__dead static void
 usage(void) {
 	fprintf(stderr, "usage: %s [-s hz] [-l | -r]\n", getprogname());
 	exit(1);
 }
 
-void
+static void
 handler(int sig)
 {
 	play = 0;
 }
 
-int
+static int
 fill_sine(int16_t *buf, int bytelen, int hertz)
 {
 	int16_t amp;
-	int pos = 0;
+	int pos;
 	double rad = 0.0;
 	int steps = SG_RATE/hertz;
 	double stepwidth = (2*M_PI)/steps;
 	
-	while (pos*SG_FRAMELEN < bytelen) {
+	for (pos=0; pos*SG_FRAMELEN < bytelen; pos++) {
 		amp = (INT16_MAX-1)*sin(rad);
 		*buf = amp;
 		buf++;
 		*buf = amp;
 		buf++;
-
 		rad += stepwidth;
-		pos++;
 	}
-	/* find last 0 transition */
-	for (;pos % steps != 0;pos--);
+	/* last negative-to-positive transition */
+	for (;pos % steps != 0; pos--);
 	
 	return pos*SG_FRAMELEN;
 }
