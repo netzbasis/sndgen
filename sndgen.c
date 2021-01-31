@@ -47,6 +47,7 @@ main(int argc, char *argv[]) {
 	size_t playlen;
 	int f_sine = 0;
 	int f_rightleft = -1;
+	int f_output = 0;
 	int ret = 1;
 	int i;
 	
@@ -56,7 +57,7 @@ main(int argc, char *argv[]) {
 	playlen = sizeof(buf);
 	arc4random_buf(&buf, playlen);
 
-	while ((ch = getopt(argc, argv, "s:lr")) != -1) {
+	while ((ch = getopt(argc, argv, "s:lor")) != -1) {
 		switch(ch) {
 		case 's':
 			f_sine = strtonum(optarg, 20, 20000 , &errstr);
@@ -65,10 +66,13 @@ main(int argc, char *argv[]) {
 			playlen = fill_sine(&buf[0], playlen, f_sine);
 			break;
 		case 'l':
-			f_rightleft=1;
+			f_rightleft = 1;
+			break;
+		case 'o':
+			f_output = 1;
 			break;
 		case 'r':
-			f_rightleft=0;
+			f_rightleft = 0;
 			break;
 		default:
 			usage();
@@ -106,6 +110,13 @@ main(int argc, char *argv[]) {
 
 	if (pledge("stdio", NULL) == -1)
 		err(1, "pledge");
+
+	if (f_output) {
+		/* undocumented debug dump to stdout */
+		fwrite(buf, 1, playlen, stdout);
+		ret=42;
+		goto cleanup;
+	}
 
 	signal(SIGINT, handler);
 
