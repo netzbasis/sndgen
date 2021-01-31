@@ -15,9 +15,11 @@
  */
 
 #include <err.h>
+#include <math.h>
 #include <signal.h>
 #include <sndio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -27,11 +29,13 @@
 #define SG_BITS 16
 #define SG_PCHAN 2
 #define SG_RATE 44100
+#define SG_BIPBY 8
 
 int play = 1;
 
 __dead void static usage(void);
 void handler(int);
+int fill_sine(int16_t*, int, int);
 
 int
 main(int argc, char *argv[]) {
@@ -63,7 +67,7 @@ main(int argc, char *argv[]) {
 			f_sine = strtonum(optarg, 20, 20000 , &errstr);
 			if (errstr != NULL)
 				errx(ret, "hz must be between 20 and 20000");
-			/* XXX TODO sine function implementation */
+			playlen = fill_sine(&buf[0], playlen, f_sine);
 			break;
 		case 'l':
 			arc4random_buf(&buf, playlen);
@@ -117,4 +121,37 @@ void
 handler(int sig)
 {
 	play = 0;
+}
+
+int
+fill_sine(int16_t *buf, int bytelen, int hertz)
+{
+	int16_t amp;
+	int pos = 0;
+	double rad = 0.0;
+	int steps = SG_RATE/hertz;
+	double stepwidth = (2*M_PI)/steps;
+	int last = INT16_MAX;
+	
+	while (pos*SG_BITS/SG_BIPBY*SG_PCHAN < bytelen) {
+		amp = (INT16_MAX-1)*sin(rad);
+		*buf = amp;
+		buf++;
+		*buf = amp;
+		buf++;
+
+		rad += stepwidth;
+		pos++;
+	}
+	/* find last 0 transition */
+	for (;;) {
+		buf-=2;
+		pos--;
+		if (abs(*buf) < last)
+			last = *buf;
+		else
+			break;
+	}
+	
+	return pos*SG_BITS/SG_BIPBY*SG_PCHAN;
 }
