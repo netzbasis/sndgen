@@ -44,7 +44,7 @@ main(int argc, char *argv[]) {
 	int16_t buf[SG_RATE*SG_PCHAN]; /* XXX 1sec audio buffer */
 	struct sio_hdl *hdl;
 	struct sio_par par;
-	ssize_t playlen;
+	size_t playlen;
 	int f_sine = 0;
 	int f_rightleft = -1;
 	int ret = 1;
