@@ -131,7 +131,6 @@ fill_sine(int16_t *buf, int bytelen, int hertz)
 	double rad = 0.0;
 	int steps = SG_RATE/hertz;
 	double stepwidth = (2*M_PI)/steps;
-	int last = INT16_MAX;
 	
 	while (pos*SG_BITS/SG_BIPBY*SG_PCHAN < bytelen) {
 		amp = (INT16_MAX-1)*sin(rad);
@@ -144,14 +143,7 @@ fill_sine(int16_t *buf, int bytelen, int hertz)
 		pos++;
 	}
 	/* find last 0 transition */
-	for (;;) {
-		buf-=2;
-		pos--;
-		if (abs(*buf) < last)
-			last = *buf;
-		else
-			break;
-	}
+	for (;pos % steps != 0;pos--);
 	
 	return pos*SG_BITS/SG_BIPBY*SG_PCHAN;
 }

@@ -1,6 +1,6 @@
 PROG=	sndgen
 
-LDADD=	-lsndio
+LDADD=	-lsndio -lm
 BINDIR=	/usr/local/bin
 
 NOMAN=	noman
