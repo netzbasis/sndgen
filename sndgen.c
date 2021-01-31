@@ -49,13 +49,6 @@ main(int argc, char *argv[]) {
 	int ret = 1;
 	int i;
 	
-	sio_initpar(&par);
-	par.sig = SG_SIG;
-	par.bits = SG_BITS;
-	par.pchan = SG_PCHAN;
-	par.rate = SG_RATE;
-	par.le = 1; /* XXX what about be architectures? */
-
 	if (pledge("stdio dns unix rpath audio", NULL) == -1)
 		err(1, "pledge");
 
@@ -93,6 +86,13 @@ main(int argc, char *argv[]) {
 
 	if (pledge("stdio audio", NULL) == -1)
 		err(1, "pledge");
+
+	sio_initpar(&par);
+	par.sig = SG_SIG;
+	par.bits = SG_BITS;
+	par.pchan = SG_PCHAN;
+	par.rate = SG_RATE;
+	par.le = 1; /* XXX what about be architectures? */
 
 	if (!sio_setpar(hdl, &par))
 		goto cleanup;
