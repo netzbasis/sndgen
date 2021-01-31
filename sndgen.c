@@ -29,7 +29,7 @@
 #define SG_BITS 16
 #define SG_PCHAN 2
 #define SG_RATE 44100
-#define SG_BIPBY 8
+#define SG_FRAMELEN SG_BITS/8*SG_PCHAN
 
 int play = 1;
 
@@ -141,7 +141,7 @@ fill_sine(int16_t *buf, int bytelen, int hertz)
 	int steps = SG_RATE/hertz;
 	double stepwidth = (2*M_PI)/steps;
 	
-	while (pos*SG_BITS/SG_BIPBY*SG_PCHAN < bytelen) {
+	while (pos*SG_FRAMELEN < bytelen) {
 		amp = (INT16_MAX-1)*sin(rad);
 		*buf = amp;
 		buf++;
@@ -154,5 +154,5 @@ fill_sine(int16_t *buf, int bytelen, int hertz)
 	/* find last 0 transition */
 	for (;pos % steps != 0;pos--);
 	
-	return pos*SG_BITS/SG_BIPBY*SG_PCHAN;
+	return pos*SG_FRAMELEN;
 }
