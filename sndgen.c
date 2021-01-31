@@ -46,16 +46,15 @@ main(int argc, char *argv[]) {
 	struct sio_par par;
 	ssize_t playlen;
 	int f_sine = 0;
+	int f_rightleft = -1;
 	int ret = 1;
 	int i;
 	
 	if (pledge("stdio dns unix rpath audio", NULL) == -1)
 		err(1, "pledge");
 
-	/* default to white noise bursts */
 	playlen = sizeof(buf);
 	arc4random_buf(&buf, playlen);
-	memset(&buf, '\0', playlen/2);
 
 	while ((ch = getopt(argc, argv, "s:lr")) != -1) {
 		switch(ch) {
@@ -66,18 +65,23 @@ main(int argc, char *argv[]) {
 			playlen = fill_sine(&buf[0], playlen, f_sine);
 			break;
 		case 'l':
-			arc4random_buf(&buf, playlen);
-			for (i=1; i<SG_RATE*SG_PCHAN; i+=2)
-				buf[i] = 0;
+			f_rightleft=1;
 			break;
 		case 'r':
-			arc4random_buf(&buf, playlen);
-			for (i=0; i<SG_RATE*SG_PCHAN; i+=2)
-				buf[i] = 0;
+			f_rightleft=0;
 			break;
 		default:
 			usage();
 		}
+	}
+
+	if (f_rightleft == -1 && f_sine == 0) {
+		/* default to white noise bursts */
+		memset(&buf, '\0', playlen/2);
+	} else if (f_rightleft != -1) {
+		/* mute one channel */
+		for (i=f_rightleft; i<SG_RATE*SG_PCHAN; i+=2)
+			buf[i] = 0;
 	}
 
 	hdl = sio_open(SIO_DEVANY, SIO_PLAY, 0);
