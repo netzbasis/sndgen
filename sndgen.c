@@ -54,6 +54,13 @@ main(int argc, char *argv[]) {
 	if (pledge("stdio dns unix rpath audio", NULL) == -1)
 		err(1, "pledge");
 
+	hdl = sio_open(SIO_DEVANY, SIO_PLAY, 0);
+	if (hdl == NULL)
+		errx(ret, "could not open device");
+
+	if (pledge("stdio audio", NULL) == -1)
+		err(1, "pledge");
+
 	playlen = sizeof(buf);
 	arc4random_buf(&buf, playlen);
 
@@ -83,13 +90,6 @@ main(int argc, char *argv[]) {
 		for (i=f_lrmute; i<SG_RATE*SG_PCHAN; i+=2)
 			buf[i] = 0;
 	}
-
-	hdl = sio_open(SIO_DEVANY, SIO_PLAY, 0);
-	if (hdl == NULL)
-		errx(ret, "could not open device");
-
-	if (pledge("stdio audio", NULL) == -1)
-		err(1, "pledge");
 
 	sio_initpar(&par);
 	par.sig = SG_SIG;
