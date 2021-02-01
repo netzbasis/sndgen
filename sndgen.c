@@ -96,7 +96,7 @@ main(int argc, char *argv[]) {
 	par.bits = SG_BITS;
 	par.pchan = SG_PCHAN;
 	par.rate = SG_RATE;
-	par.le = 1; /* XXX what about be architectures? */
+	par.le = SIO_LE_NATIVE;
 
 	if (!sio_setpar(hdl, &par))
 		goto cleanup;

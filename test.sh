@@ -15,4 +15,4 @@ sndtest "-lr" #-l should be ignored
 sndtest "-s 150"
 sndtest "-s 250 -l"
 sndtest "-s 350 -r"
-$CMD -s500 -r -o > obj/s16le-44.1k-2ch.pcm
+$CMD -s500 -r -o > obj/s16nat-44.1k-2ch.pcm
