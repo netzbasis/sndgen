@@ -125,9 +125,10 @@ main(int argc, char *argv[]) {
 
 	ret = 0;
 cleanup:
+	sio_stop(hdl);
+	sio_close(hdl);
 	if (ret)
 		fprintf(stderr, "playback failed\n");
-	sio_close(hdl);
 	return ret;
 }
 
