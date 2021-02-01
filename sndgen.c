@@ -41,12 +41,12 @@ int
 main(int argc, char *argv[]) {
 	int ch;
 	const char *errstr;
-	int16_t buf[SG_RATE*SG_PCHAN]; /* XXX 1sec audio buffer */
+	int16_t buf[SG_RATE*SG_PCHAN]; /* 1sec stereo buffer */
 	struct sio_hdl *hdl;
 	struct sio_par par;
 	size_t playlen;
 	int f_sine = 0;
-	int f_rightleft = -1;
+	int f_lrmute = -1;
 	int f_output = 0;
 	int ret = 1;
 	int i;
@@ -66,25 +66,21 @@ main(int argc, char *argv[]) {
 			playlen = fill_sine(&buf[0], playlen, f_sine);
 			break;
 		case 'l':
-			f_rightleft = 1;
+			f_lrmute = 1;
 			break;
 		case 'o':
 			f_output = 1;
 			break;
 		case 'r':
-			f_rightleft = 0;
+			f_lrmute = 0;
 			break;
 		default:
 			usage();
 		}
 	}
 
-	if (f_rightleft == -1 && f_sine == 0) {
-		/* default to white noise bursts */
-		memset(&buf, '\0', playlen/2);
-	} else if (f_rightleft != -1) {
-		/* mute one channel */
-		for (i=f_rightleft; i<SG_RATE*SG_PCHAN; i+=2)
+	if (f_lrmute != -1) {
+		for (i=f_lrmute; i<SG_RATE*SG_PCHAN; i+=2)
 			buf[i] = 0;
 	}
 
