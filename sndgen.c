@@ -60,9 +60,9 @@ main(int argc, char *argv[]) {
 	while ((ch = getopt(argc, argv, "s:lor")) != -1) {
 		switch(ch) {
 		case 's':
-			f_sine = strtonum(optarg, 20, 20000 , &errstr);
+			f_sine = strtonum(optarg, 20, 11000 , &errstr);
 			if (errstr != NULL)
-				errx(ret, "hz must be between 20 and 20000");
+				errx(ret, "hz must be between 20 and 11000");
 			playlen = fill_sine(&buf[0], playlen, f_sine);
 			break;
 		case 'l':
