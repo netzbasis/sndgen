@@ -52,6 +52,7 @@ main(int argc, char *argv[]) {
 	int f_sine = 0;
 	int f_lrmute = -1;
 	int f_output = 0;
+	int f_delay = 0;
 	int ret = 1;
 	int i;
 	
@@ -65,11 +66,16 @@ main(int argc, char *argv[]) {
 	if (pledge("stdio audio", NULL) == -1)
 		err(1, "pledge");
 
-	while ((ch = getopt(argc, argv, "cs:lor")) != -1) {
+	while ((ch = getopt(argc, argv, "cd:s:lor")) != -1) {
 		switch(ch) {
 		case 'c':
 			playlen = MIN(chirp_pcm_len, sizeof(buf));
 			memcpy(buf, chirp_pcm, playlen);
+			break;
+		case 'd':
+			f_delay = strtonum(optarg, 1, 60, &errstr);
+			if (errstr != NULL)
+				errx(ret, "delay must be between 1 and 60");
 			break;
 		case 's':
 			f_sine = strtonum(optarg, 20, 11000 , &errstr);
@@ -127,10 +133,15 @@ main(int argc, char *argv[]) {
 	signal(SIGINT, handler);
 
 	for (;;) {
-		if (!sio_write(hdl, buf, playlen))
-			goto cleanup;
 		if (!play)
 			break;
+		if (!sio_write(hdl, buf, playlen))
+			goto cleanup;
+		for (i=f_delay; i > 0; i--) {
+			if (!play)
+				break;
+			sleep(1);
+		}
 	}
 
 	ret = 0;
@@ -144,7 +155,7 @@ cleanup:
 
 __dead static void
 usage(void) {
-	fprintf(stderr, "usage: %s [-c] [-s hz] [-l | -r]\n", getprogname());
+	fprintf(stderr, "usage: %s [-c] [-d delay] [-s hz] [-l | -r]\n", getprogname());
 	exit(1);
 }
 
