@@ -120,7 +120,7 @@ main(int argc, char *argv[]) {
 	if (f_output) {
 		/* undocumented debug dump to stdout */
 		fwrite(buf, 1, playlen, stdout);
-		ret=42;
+		ret=0;
 		goto cleanup;
 	}
 
