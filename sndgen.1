@@ -20,7 +20,8 @@
 .Nd generate sound
 .Sh SYNOPSIS
 .Nm sndgen
-.Op Fl lr
+.Op Fl clr
+.Op Fl d Ar delay
 .Op Fl s Ar hz
 .Sh DESCRIPTION
 .Nm
@@ -29,6 +30,10 @@ The default output is white noise.
 .Pp
 The options are as follows:
 .Bl -tag -width Ds
+.It Fl c
+Play a chirp sound.
+.It Fl d Ar delay
+Add delay between samples.
 .It Fl l
 Only play the left channel.
 .It Fl r

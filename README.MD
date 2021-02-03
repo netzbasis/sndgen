@@ -12,7 +12,8 @@ Uses the OpenBSD build system and can be installed by
 # SYNOPSIS
 
 **sndgen**
-\[**-lr**]
+\[**-clr**]
+\[**-d**&nbsp;*delay*]
 \[**-s**&nbsp;*hz*]
 
 # DESCRIPTION
@@ -22,6 +23,14 @@ is used to generate stereo sound and directly play it using sndiod(8).
 The default output is white noise.
 
 The options are as follows:
+
+**-c**
+
+> Play a chirp sound.
+
+**-d** *delay*
+
+> Add delay between samples.
 
 **-l**
 
