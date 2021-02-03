@@ -20,3 +20,4 @@ sndtest "-s 1000 -c" #ignore s
 sndtest "-s 1000 -c -rl" #ignore sr
 sndtest "-s 1000 -c -lr" #ignore sl
 $CMD -s500 -r -o > obj/s16nat-44.1k-2ch.pcm
+$CMD -c -o > obj/chirp.pcm
