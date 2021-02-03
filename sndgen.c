@@ -24,6 +24,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "chirp.h"
+
 /* CD format should always work, let's depend on it */
 #define SG_SIG 1
 #define SG_BITS 16
@@ -37,14 +39,16 @@ __dead static void usage(void);
 static void handler(int);
 static int fill_sine(int16_t*, int, int);
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
 int
 main(int argc, char *argv[]) {
 	int ch;
 	const char *errstr;
-	int16_t buf[SG_RATE*SG_PCHAN]; /* 1sec stereo buffer */
+	int16_t buf[SG_RATE*SG_PCHAN] = {0};
 	struct sio_hdl *hdl;
 	struct sio_par par;
-	size_t playlen;
+	size_t playlen = 0;
 	int f_sine = 0;
 	int f_lrmute = -1;
 	int f_output = 0;
@@ -61,16 +65,17 @@ main(int argc, char *argv[]) {
 	if (pledge("stdio audio", NULL) == -1)
 		err(1, "pledge");
 
-	playlen = sizeof(buf);
-	arc4random_buf(&buf, playlen);
-
-	while ((ch = getopt(argc, argv, "s:lor")) != -1) {
+	while ((ch = getopt(argc, argv, "cs:lor")) != -1) {
 		switch(ch) {
+		case 'c':
+			playlen = MIN(chirp_pcm_len, sizeof(buf));
+			memcpy(buf, chirp_pcm, playlen);
+			break;
 		case 's':
 			f_sine = strtonum(optarg, 20, 11000 , &errstr);
 			if (errstr != NULL)
 				errx(ret, "hz must be between 20 and 11000");
-			playlen = fill_sine(&buf[0], playlen, f_sine);
+			playlen = fill_sine(buf, sizeof(buf), f_sine);
 			break;
 		case 'l':
 			f_lrmute = 1;
@@ -84,6 +89,11 @@ main(int argc, char *argv[]) {
 		default:
 			usage();
 		}
+	}
+
+	if (playlen == 0) {
+		playlen = sizeof(buf);
+		arc4random_buf(buf, playlen);
 	}
 
 	if (f_lrmute != -1) {
@@ -134,7 +144,7 @@ cleanup:
 
 __dead static void
 usage(void) {
-	fprintf(stderr, "usage: %s [-s hz] [-l | -r]\n", getprogname());
+	fprintf(stderr, "usage: %s [-c] [-s hz] [-l | -r]\n", getprogname());
 	exit(1);
 }
 

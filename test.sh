@@ -10,9 +10,13 @@ function sndtest {
 
 echo "Starting tests"
 sndtest ""
-sndtest "-l"
-sndtest "-lr" #-l should be ignored
-sndtest "-s 150"
+sndtest "-rl" #ignore r
+sndtest "-lr" #ignore l
+sndtest "-c -s 150" #ignore c
 sndtest "-s 250 -l"
 sndtest "-s 350 -r"
+sndtest "-c"
+sndtest "-s 1000 -c" #ignore s
+sndtest "-s 1000 -c -rl" #ignore sr
+sndtest "-s 1000 -c -lr" #ignore sl
 $CMD -s500 -r -o > obj/s16nat-44.1k-2ch.pcm
