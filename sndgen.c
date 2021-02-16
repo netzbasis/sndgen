@@ -97,6 +97,10 @@ main(int argc, char *argv[])
 			usage();
 		}
 	}
+	argc -= optind;
+	argv += optind;
+	if (argc > 0)
+		usage();
 
 	if (playlen == 0) {
 		playlen = sizeof(buf);
