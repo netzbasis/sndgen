@@ -42,7 +42,8 @@ static int fill_sine(int16_t*, int, int);
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
 	int ch;
 	const char *errstr;
 	int16_t buf[SG_RATE*SG_PCHAN] = {0};
@@ -67,7 +68,7 @@ main(int argc, char *argv[]) {
 		err(1, "pledge");
 
 	while ((ch = getopt(argc, argv, "cd:s:lor")) != -1) {
-		switch(ch) {
+		switch (ch) {
 		case 'c':
 			playlen = MIN(chirp_pcm_len, sizeof(buf));
 			memcpy(buf, chirp_pcm, playlen);
@@ -154,7 +155,8 @@ cleanup:
 }
 
 __dead static void
-usage(void) {
+usage(void)
+{
 	fprintf(stderr, "usage: %s [-c] [-d delay] [-s hz] [-l | -r]\n", getprogname());
 	exit(1);
 }

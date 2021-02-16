@@ -12312,5 +12312,6 @@ unsigned char chirp_pcm[] = {
   0x05, 0x00, 0x04, 0x00, 0x02, 0x00, 0x01, 0x00
 /* chirp like a bird or two black holes merging, whichever you prefer. */
 /* Credit: LIGO https://ligo.org/multimedia/ gw150914 ringtone edition */
+/* Ringtones: Milde Science Communication  https://milde-marketing.com */
 };
 unsigned int chirp_pcm_len = 147728;
